@@ -81,7 +81,7 @@ You can emulate an anonymous user session in the console by setting the `x-hasur
 ## Limitations
 
 - No password strength is enforced.
-- Tokens are set to expire after 24 hours with the `exp` claim.
+- Tokens are set to expire after 24 hours with the `exp` claim, however you can adjust the [interval](https://github.com/sander-io/hasura-jwt-auth/blob/master/hasura-jwt-auth.sql#L52).
 - Existing tokens will not invalidate when a user is disabled, however no new tokens can be generated.
 - The `jwt_secret` is stored inside the database instead of a password vault.
 
