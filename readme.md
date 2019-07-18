@@ -18,7 +18,7 @@ python3 -c 'import secrets; print(secrets.token_urlsafe(48))'
 
 Set these configuration options when starting the Hasura engine and replace the secrets with your own values:
 
-```
+```bash
 HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous
 HASURA_GRAPHQL_ADMIN_SECRET=bDTgIXEdpbmDogTZeOeONKeSK4_-SbP5ttS9JU-TOVHEB7Gyh1LsIigUB9ihoiOq
 HASURA_GRAPHQL_JWT_SECRET='{"type":"HS256","key":"FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P"}'
