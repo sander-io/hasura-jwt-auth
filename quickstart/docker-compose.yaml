@@ -1,0 +1,42 @@
+    
+version: '3.3'
+services:
+  postgres:
+    image: postgres
+    ports:
+    - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+      - JWT_SECRET_KEY=${HASURA_JWT_SECRET_KEY}
+    volumes:
+      - "./:/docker-entrypoint-initdb.d"
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    depends_on:
+    - postgres
+    ports:
+    - 5050:80
+    ## you can change pgAdmin default username/password with below environment variables
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+  graphql-engine:
+    image: hasura/graphql-engine:latest
+    ports:
+    - "8080:8080"
+    depends_on:
+    - "postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ACCESS_KEY: ${HASURA_ACCESS_KEY}
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"${HASURA_JWT_SECRET_KEY}"}'
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: ${HASURA_UNAUTHORIZED_ROLE}
+volumes:
+  db_data:
