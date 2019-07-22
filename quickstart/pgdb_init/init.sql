@@ -10,14 +10,16 @@
 begin;
 
 \echo # Load pgjwt file
-\ir ../pgjwt.sql
+\ir ../../pgjwt.sql
 
 \echo # Load hasura-jwt-auth file
-\ir ../hasura-jwt-auth.sql
-
+\ir ../../hasura-jwt-auth.sql
 
 \echo # Load your schema
-\ir yourschema/schema.sql
+\ir ../yourschema/schema.sql
+
+\echo # Specify JWT key for database
+alter database example set "hasura.jwt_secret_key" to ':jwt_secret_key';
 
 
 commit;
