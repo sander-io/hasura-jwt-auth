@@ -39,4 +39,4 @@ services:
       HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"${HASURA_JWT_SECRET_KEY}"}'
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: ${HASURA_UNAUTHORIZED_ROLE}
 volumes:
-  db_data:
+  pgdb_init:
