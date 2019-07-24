@@ -1,7 +1,14 @@
-\set ON_ERROR_STOP true
+-- add these lines if you execute the script using psql:
+-- \set ON_ERROR_STOP true
+-- set role yourowner;
+-- \connection yourdb
 
 drop function if exists hasura_auth(varchar, varchar);
+drop trigger if exists hasura_user_encrypt_password_trigger on hasura_user;
+drop function if exists hasura_user_encrypt_password();
+drop function if exists hasura_encrypt_password(text, text);
 drop table if exists hasura_user;
+
 create table hasura_user(
     user_id serial primary key,
     email varchar unique,

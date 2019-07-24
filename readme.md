@@ -37,6 +37,11 @@ Install the [pgjwt](https://github.com/michelp/pgjwt) extension or execute the [
 This extension contains a `sign` function that does the the actual jwt signing.
 
 Execute the [hasura-jwt-auth.sql](hasura-jwt-auth.sql) script and add tracking on the `hasura_user` table and the `hasura_auth` function.
+An easy way to do this is by navigating to the Data tab in Hasura and use the Raw SQL form.
+However this doesn't display the example jwt token as output.
+
+Its also possible to use the `psql` client to load the script.
+Make sure that you connect using the same user as Hasura, or add a `set role` and `\connect` line in the script.
 
 ## Table: hasura_user
 
