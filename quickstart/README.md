@@ -13,6 +13,8 @@ Result:
 * A PgAdmin4 instance will be running on port 5050, and can be logged into with the PGADMIN_EMAIL and PGADMIN_PASSWORD specified in the .env file. Note: Use 'postgres', NOT 'localhost' as the hostname in PgAdmin4
 * A Hasura instance will be running on port 8080, and can be accessed using the HASURA_ADMIN_SECRET in the .env file
 * A Postgres database will be running on port 5432, with the username, password and hostname (default postgres) specified in the .env file.
+* The database will have the hasura-jwt-auth service installed and ready to go
 
-Note: TO connect from PGAdmin4 or Hasura to Postgres, use the docker service name (default 'postgres') as the hostname of the database.
+
+Note: To connect from PGAdmin4 or Hasura to Postgres, use the docker service name (default 'postgres') as the hostname of the database.
 
