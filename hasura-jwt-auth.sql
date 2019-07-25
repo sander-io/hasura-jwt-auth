@@ -37,6 +37,15 @@ begin
 end;
 $$ language 'plpgsql';
 
+
+CREATE TABLE hasura_pgjwt_key (
+   onerow_id bool PRIMARY KEY DEFAULT TRUE
+ , jwt_secret_key text
+ , CONSTRAINT onerow_uni CHECK (onerow_id)
+);
+INSERT INTO hasura_pgjwt_key VALUES (DEFAULT, 'FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P');
+REVOKE ALL ON hasura_pgjwt_key FROM PUBLIC;
+
 create trigger hasura_user_encrypt_password_trigger
 before insert or update on hasura_user
 for each row execute procedure hasura_user_encrypt_password();
@@ -62,8 +71,8 @@ create or replace function hasura_auth(email in varchar, cleartext_password in v
                     'x-hasura-default-role', default_role,
                     'x-hasura-allowed-roles', allowed_roles
                 )
-            ), current_setting('hasura.jwt_secret_key')) as jwt_token
-    from hasura_user h
+            ), 'hpk.jwt_secret_key') as jwt_token
+    from hasura_user h, hasura_pgjwt_key hpk
     where h.email = hasura_auth.email
     and h.enabled
     and h.crypt_password = hasura_encrypt_password(hasura_auth.cleartext_password, h.crypt_password);
