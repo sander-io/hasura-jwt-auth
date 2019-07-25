@@ -3,6 +3,15 @@
 -- set role yourowner;
 -- \connection yourdb
 
+drop table if exists hasura_pgjwt_key;
+CREATE TABLE hasura_pgjwt_key (
+   onerow_id bool PRIMARY KEY DEFAULT TRUE
+ , jwt_secret_key text
+ , CONSTRAINT onerow_uni CHECK (onerow_id)
+);
+INSERT INTO hasura_pgjwt_key VALUES (DEFAULT, 'FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P');
+REVOKE ALL ON hasura_pgjwt_key FROM PUBLIC;
+
 drop function if exists hasura_auth(varchar, varchar);
 drop trigger if exists hasura_user_encrypt_password_trigger on hasura_user;
 drop function if exists hasura_user_encrypt_password();
@@ -22,8 +31,9 @@ create table hasura_user(
 
 create or replace function hasura_encrypt_password(cleartext_password in text, salt in text) returns varchar as $$
     select crypt(
-        encode(hmac(cleartext_password, current_setting('hasura.jwt_secret_key'), 'sha256'), 'escape'),
-        salt);
+        encode(hmac(cleartext_password,  hasura_pgjwt_key.jwt_secret_key , 'sha256'), 'escape'),
+        salt)
+        FROM hasura_pgjwt_key;
 $$ language sql stable;
 
 create or replace function hasura_user_encrypt_password() returns trigger as $$
@@ -36,15 +46,6 @@ begin
     return new;
 end;
 $$ language 'plpgsql';
-
-
-CREATE TABLE hasura_pgjwt_key (
-   onerow_id bool PRIMARY KEY DEFAULT TRUE
- , jwt_secret_key text
- , CONSTRAINT onerow_uni CHECK (onerow_id)
-);
-INSERT INTO hasura_pgjwt_key VALUES (DEFAULT, 'FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P');
-REVOKE ALL ON hasura_pgjwt_key FROM PUBLIC;
 
 create trigger hasura_user_encrypt_password_trigger
 before insert or update on hasura_user
