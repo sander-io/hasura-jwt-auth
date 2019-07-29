@@ -7,4 +7,6 @@ insert into todos(title, is_public, user_id)
 values
     ('Check out Hasura', true, 1),
     ('Drink coffee', false, 1),
-    ('Deploy webapp', false, 2);
+    ('Deploy webapp', false, 2),
+    ('Excercise', true, 2),
+    ('Holiday', false, 2);

@@ -9,7 +9,7 @@ The admin can create new users in the console or using GraphQL mutations on the 
 
 ## Quickstart
 
-The Docker [quickstart](quickstart/readme.md) initializes containers for PostgreSQL, Hasura and PgAdmin with an initial configuration for users/todos.
+The Docker [quickstart](quickstart/readme.md) initializes containers for PostgreSQL, Hasura and PgAdmin with an initial configuration for users/todos. Thanks go out to [@dvasdekis](https://github.com/dvasdekis).
 
 ## Configuration
 

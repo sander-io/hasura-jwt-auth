@@ -17,9 +17,39 @@ Environment variables can also be set in the `.env` file.
 
 ## Result
 
-* PgAdmin4 instance will be running at http://localhost:5050 (login: `admin` / `password`). Note: use `postgres` as hostname and `postgres` as username.
 * Hasura instance will be running at http://localhost:8080 and can be accessed using `adminsecret`.
+* PgAdmin4 instance will be running at http://localhost:5050 (login: `admin` / `password`). Note: use `postgres` as hostname and `postgres` as username.
 * The database will have the hasura-jwt-auth service installed and ready to go.
+
+## Queries
+
+Role is anonymous:
+
+```graphql
+query Auth {
+  hasura_auth(args: {email: "user1@example.com", cleartext_password: "password"}) {
+    jwt_token
+  }
+}
+```
+
+Use the token in the `Authorization: Bearer ${jwt_token}` header.
+
+```graphql
+query Todos {
+  hasura_user {
+    id
+    email
+    todos {
+      title
+      is_public
+      is_completed
+    }
+  }
+}
+```
+
+Notice that you see all the todos of your own user and all the public todo's of the other users.
 
 ## Interactive SQL
 
