@@ -1,3 +1,5 @@
+\connect example
+
 -- This code is from the `pgjwt` extension:
 -- https://github.com/michelp/pgjwt
 

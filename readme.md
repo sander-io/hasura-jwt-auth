@@ -7,6 +7,10 @@ After a successful authentication the `Authorization: Bearer {jwt_token}` header
 
 The admin can create new users in the console or using GraphQL mutations on the `hasura_user` table.
 
+## Quickstart
+
+The Docker [quickstart](quickstart/readme.md) initializes containers for PostgreSQL, Hasura and PgAdmin with an initial configuration for users/todos.
+
 ## Configuration
 
 Hasura should be configured with a secret for the admin user and for signing the jwt tokens.
@@ -20,23 +24,25 @@ Set these configuration options when starting the Hasura engine and replace the 
 
 ```bash
 HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous
-HASURA_GRAPHQL_ADMIN_SECRET=bDTgIXEdpbmDogTZeOeONKeSK4_-SbP5ttS9JU-TOVHEB7Gyh1LsIigUB9ihoiOq
-HASURA_GRAPHQL_JWT_SECRET='{"type":"HS256","key":"FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P"}'
+HASURA_GRAPHQL_ADMIN_SECRET=adminsecret
+HASURA_GRAPHQL_JWT_SECRET='{"type":"HS256","key":"jwtsecret of 32 characters or more"}'
 ```
 
 The SQL function needs to know the secret to generate jwt tokens so we store it as a setting in the database:
 
 ```sql
+create database example;
+\connect example
 create extension if not exists pgcrypto;
-alter database example set "hasura.jwt_secret_key" to 'FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P';
+alter database example set "hasura.jwt_secret_key" to 'jwtsecret of 32 characters or more';
 ```
 
 ## Setup
 
-Install the [pgjwt](https://github.com/michelp/pgjwt) extension or execute the [pgjwt.sql](pgjwt.sql) script.
+Install the [pgjwt](https://github.com/michelp/pgjwt) extension or execute the [pgjwt.sql](quickstart/docker-entrypoint-initdb.d/1-pgjwt.sql) script.
 This extension contains a `sign` function that does the the actual jwt signing.
 
-Execute the [hasura-jwt-auth.sql](hasura-jwt-auth.sql) script and add tracking on the `hasura_user` table and the `hasura_auth` function.
+Execute the [hasura-jwt-auth.sql](quickstart/docker-entrypoint-initdb.d/2-hasura-jwt-auth.sql) script and add tracking on the `hasura_user` table and the `hasura_auth` function.
 An easy way to do this is by navigating to the Data tab in Hasura and use the Raw SQL form.
 However this doesn't display the example jwt token as output.
 
@@ -94,3 +100,8 @@ You can emulate an anonymous user session in the console by setting the `x-hasur
 
 - [Authentication using JWT](https://docs.hasura.io/1.0/graphql/manual/auth/authentication/jwt.html)
 - [pgjwt](https://github.com/michelp/pgjwt)
+
+## Contributors
+
+- [@dvasdekis](https://github.com/dvasdekis) docker quickstart
+- [@sanderhahn](https://github.com/dvasdekis)

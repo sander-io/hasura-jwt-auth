@@ -1,25 +1,7 @@
--- add these lines if you execute the script using psql:
--- \set ON_ERROR_STOP true
--- set role yourowner;
--- \connection yourdb
-
-drop table if exists hasura_pgjwt_key;
-CREATE TABLE hasura_pgjwt_key (
-   onerow_id bool PRIMARY KEY DEFAULT TRUE
- , jwt_secret_key text
- , CONSTRAINT onerow_uni CHECK (onerow_id)
-);
-INSERT INTO hasura_pgjwt_key VALUES (DEFAULT, 'FKlynHJWnKBJaFrB2PgWYX4xvEDY0edcy_HIWCw1AGUpeooHvUg9DfOBSzoeLh2P');
-REVOKE ALL ON hasura_pgjwt_key FROM PUBLIC;
-
-drop function if exists hasura_auth(varchar, varchar);
-drop trigger if exists hasura_user_encrypt_password_trigger on hasura_user;
-drop function if exists hasura_user_encrypt_password();
-drop function if exists hasura_encrypt_password(text, text);
-drop table if exists hasura_user;
+\connect example
 
 create table hasura_user(
-    user_id serial primary key,
+    id serial primary key,
     email varchar unique,
     crypt_password varchar,
     cleartext_password varchar,
@@ -31,9 +13,8 @@ create table hasura_user(
 
 create or replace function hasura_encrypt_password(cleartext_password in text, salt in text) returns varchar as $$
     select crypt(
-        encode(hmac(cleartext_password,  hasura_pgjwt_key.jwt_secret_key , 'sha256'), 'escape'),
-        salt)
-        FROM hasura_pgjwt_key;
+        encode(hmac(cleartext_password, current_setting('hasura.jwt_secret_key'), 'sha256'), 'escape'),
+        salt);
 $$ language sql stable;
 
 create or replace function hasura_user_encrypt_password() returns trigger as $$
@@ -54,7 +35,7 @@ for each row execute procedure hasura_user_encrypt_password();
 -- https://docs.hasura.io/1.0/graphql/manual/auth/authentication/jwt.html#configuring-jwt-mode
 create or replace function hasura_auth(email in varchar, cleartext_password in varchar) returns setof hasura_user as $$
     select
-        user_id,
+        id,
         email,
         crypt_password,
         cleartext_password,
@@ -63,25 +44,18 @@ create or replace function hasura_auth(email in varchar, cleartext_password in v
         enabled,
         sign(
             json_build_object(
-                'sub', user_id::text,
+                'sub', id::text,
                 'iss', 'Hasura-JWT-Auth',
                 'iat', round(extract(epoch from now())),
                 'exp', round(extract(epoch from now() + interval '24 hour')),
                 'https://hasura.io/jwt/claims', json_build_object(
-                    'x-hasura-user-id', user_id::text,
+                    'x-hasura-user-id', id::text,
                     'x-hasura-default-role', default_role,
                     'x-hasura-allowed-roles', allowed_roles
                 )
-            ), 'hpk.jwt_secret_key') as jwt_token
-    from hasura_user h, hasura_pgjwt_key hpk
+            ), current_setting('hasura.jwt_secret_key')) as jwt_token
+    from hasura_user h
     where h.email = hasura_auth.email
     and h.enabled
     and h.crypt_password = hasura_encrypt_password(hasura_auth.cleartext_password, h.crypt_password);
 $$ language 'sql' stable;
-
---  insert an example user and print a jwt_token
-insert into hasura_user(email, cleartext_password) values ('user@example.com', 'password');
-
-do $$ begin
-    raise notice 'Example jwt_token: %s', (select jwt_token from hasura_auth('user@example.com', 'password'));
-end $$;
