@@ -8,9 +8,7 @@ Intent is to allow for a quick and simple boilerplate from the Hasura PGJWT scri
 docker-compose up -d
 
 # load the metadata
-curl -H "x-hasura-admin-secret: adminsecret" \
-    -d '{"type":"replace_metadata", "args":'$(cat metadata.json)'}' \
-    http://localhost:8080/v1/query
+python3 replace_metadata.py
 ```
 
 Environment variables can also be set in the `.env` file.
