@@ -84,6 +84,24 @@ Use the returned `jwt_token` as a header:
 
 <img src="images/authorization-header.png" alt="Authorization Header" width="65%">
 
+## Change password
+
+The permissions of the user table can be configured so that an authenticated user is able to update its own email/password.
+
+<img src="images/change-password.png" alt="Change password permissions." width="65%">
+
+The password can be updated by setting the `cleartext_password` column which triggers setting the `crypt_password` to prevent storing cleartext passwords in the database. Warning: be careful with the configuration of log settings because its possible enable logging the input values of queries.
+
+```graphql
+mutation {
+  update_hasura_user(_set: {cleartext_password: "changed_password"}, where: {}) {
+    returning {
+      email
+    }
+  }
+}
+```
+
 ## Troubleshooting
 
 Use the [jwt.io](https://jwt.io/) website to debug the contents of the generated jwt tokens check validation.
