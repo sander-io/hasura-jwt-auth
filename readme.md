@@ -68,7 +68,7 @@ The table `hasura_user` table contains fields for:
 
 Set the permissions so that users with role `anonymous` are allowed to select the `hasura_user` table and allow only the `jwt_token` column.
 
-<img src="images/anonymous-permissions.png" alt="Anonymous Permissions" width="65%">
+<img src="images/anonymous-permissions.png" alt="Anonymous Permissions" width="100%">
 
 Example authentication request:
 
@@ -82,13 +82,13 @@ query {
 
 Use the returned `jwt_token` as a header:
 
-<img src="images/authorization-header.png" alt="Authorization Header" width="65%">
+<img src="images/authorization-header.png" alt="Authorization Header" width="100%">
 
 ## Change password
 
 The permissions of the user table can be configured so that an authenticated user is able to update its own email/password.
 
-<img src="images/change-password.png" alt="Change password permissions." width="65%">
+<img src="images/change-password.png" alt="Change password permissions." width="100%">
 
 The password can be updated by setting the `cleartext_password` column which triggers setting the `crypt_password` to prevent storing cleartext passwords in the database. Warning: be careful with the configuration of log settings because its possible enable logging the input values of queries.
 
